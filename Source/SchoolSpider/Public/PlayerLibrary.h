@@ -18,4 +18,7 @@ class SCHOOLSPIDER_API UPlayerLibrary : public UBlueprintFunctionLibrary
 
 		UFUNCTION( BlueprintCallable, Category = "PlayerNodes" )
 			static FVector DynamicCameraOffset( FVector _velocity, FVector _offsetSpeed, FVector _multiplier, float _deltaTime, FVector _currentPosition );
+
+		UFUNCTION( BlueprintCallable, Category = "PlayerNodes" )
+			static FVector OptimalRopeDirection( FVector _velocity );
 };

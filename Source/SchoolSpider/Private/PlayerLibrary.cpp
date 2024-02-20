@@ -30,3 +30,13 @@ FVector UPlayerLibrary::DynamicCameraOffset( FVector _velocity, FVector _offsetS
 
 	return newOffset;
 }
+
+FVector UPlayerLibrary::OptimalRopeDirection( FVector _velocity )
+{
+	FVector dir = FVector( _velocity.X, -_velocity.Z, _velocity.Y );
+	if ( dir.Z < 0 )
+		dir *= -1;
+
+	dir.Normalize();
+	return dir;
+}
