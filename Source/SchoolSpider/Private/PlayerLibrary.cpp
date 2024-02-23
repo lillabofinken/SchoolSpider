@@ -40,3 +40,11 @@ FVector UPlayerLibrary::OptimalRopeDirection( FVector _velocity )
 	dir.Normalize();
 	return dir;
 }
+
+FVector UPlayerLibrary::SwingDirection( FVector _attachPos, FVector _playerPos )
+{
+	FVector dir = _playerPos - _attachPos;
+	FVector output{ dir.X,- dir.Z, dir.Y };
+	output.Normalize();
+	return output;
+}
