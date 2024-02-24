@@ -48,3 +48,10 @@ FVector UPlayerLibrary::SwingDirection( FVector _attachPos, FVector _playerPos )
 	output.Normalize();
 	return output;
 }
+
+FVector UPlayerLibrary::MouseToWorld( FVector _mouseDirection, FVector _camPos )
+{
+	float magnitude = abs( _camPos.X / _mouseDirection.X );
+
+	return _mouseDirection * magnitude + _camPos;
+}

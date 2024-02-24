@@ -24,4 +24,7 @@ class SCHOOLSPIDER_API UPlayerLibrary : public UBlueprintFunctionLibrary
 			
 		UFUNCTION( BlueprintCallable, Category = "PlayerNodes" )
 			static FVector SwingDirection( FVector _attachPos, FVector _playerPos );
+
+		UFUNCTION( BlueprintCallable, Category = "PlayerNodes" )
+			static FVector MouseToWorld( FVector _mouseDirection, FVector _camPos );
 };
