@@ -11,6 +11,9 @@ class SCHOOLSPIDER_API ASpiderPawn : public APawn
 {
 	GENERATED_BODY()
 
+	UPROPERTY( EditAnywhere )
+	float maxRopeLenght = 2000.0f;
+
 public:
 	// Sets default values for this pawn's properties
 	ASpiderPawn();
@@ -25,5 +28,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+private:
+	void shootRope();
 };

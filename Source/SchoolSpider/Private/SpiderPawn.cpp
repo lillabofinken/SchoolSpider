@@ -31,3 +31,7 @@ void ASpiderPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+void ASpiderPawn::shootRope()
+{
+
+}
