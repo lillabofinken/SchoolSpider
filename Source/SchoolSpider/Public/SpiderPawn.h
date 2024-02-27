@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "cAttachPoint.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "SpiderPawn.generated.h"
@@ -10,9 +11,19 @@ UCLASS()
 class SCHOOLSPIDER_API ASpiderPawn : public APawn
 {
 	GENERATED_BODY()
+public:
+	
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+		float m_maxRopeLenght = 2000.0f;
 
-	UPROPERTY( EditAnywhere )
-	float maxRopeLenght = 2000.0f;
+	UPROPERTY( BlueprintReadWrite )
+		bool m_grounded = true;
+
+	UPROPERTY( BlueprintReadWrite )
+		bool m_swinging = false;
+
+private:
+
 
 public:
 	// Sets default values for this pawn's properties
