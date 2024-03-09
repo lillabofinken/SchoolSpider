@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h" 
 #include "cAttachPoint.generated.h"
 
 UCLASS()
@@ -14,6 +15,9 @@ class SCHOOLSPIDER_API AcAttachPoint : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AcAttachPoint();
+	
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+		UPhysicsConstraintComponent* m_physicsConstraint;
 
 protected:
 	// Called when the game starts or when spawned

@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include "Engine/World.h" 
 #include "cAttachPoint.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h" 
+#include "Components/CapsuleComponent.h" 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "SpiderPawn.generated.h"
@@ -22,8 +25,15 @@ public:
 	UPROPERTY( BlueprintReadWrite )
 		bool m_swinging = false;
 
+	UPROPERTY( BlueprintReadWrite )
+		UCapsuleComponent* m_capsule;
+
+	UPROPERTY( EditDefaultsOnly )
+		TSubclassOf<AcAttachPoint> m_attach_BP;
+
 private:
 
+	AcAttachPoint* m_attachPoint = nullptr;
 
 public:
 	// Sets default values for this pawn's properties
@@ -39,6 +49,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-private:
-	void shootRope();
+public:
+	UFUNCTION( BlueprintCallable, Category = "PlayerNodes" )
+	void shootRope(FVector _mousePos, bool _optimalDirection );
 };
