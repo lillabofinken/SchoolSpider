@@ -15,21 +15,21 @@ class SCHOOLSPIDER_API ASpiderPawn : public APawn
 {
 	GENERATED_BODY()
 public:
-	
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-		float m_maxRopeLenght = 2000.0f;
+	UPROPERTY( EditAnywhere, BlueprintReadWrite ) float m_acceleration = 2000.0f;
+	UPROPERTY( EditAnywhere, BlueprintReadWrite ) float m_maxSpeed = 2000.0f;	
+	UPROPERTY( EditAnywhere, BlueprintReadWrite ) float m_maxRopeLenght = 2000.0f;
 
-	UPROPERTY( BlueprintReadWrite )
-		bool m_grounded = true;
+	UPROPERTY( BlueprintReadWrite )	bool m_grounded = true;
+	UPROPERTY( BlueprintReadWrite )	bool m_swinging = false;
 
-	UPROPERTY( BlueprintReadWrite )
-		bool m_swinging = false;
 
-	UPROPERTY( BlueprintReadWrite )
-		UCapsuleComponent* m_capsule;
+	UPROPERTY( BlueprintReadWrite )	UCapsuleComponent* m_capsule;
+	UPROPERTY( BlueprintReadWrite ) UPrimitiveComponent* m_primative;
 
-	UPROPERTY( EditDefaultsOnly )
-		TSubclassOf<AcAttachPoint> m_attach_BP;
+	UPROPERTY( BlueprintReadWrite )	APlayerController* m_playerController;
+
+
+	UPROPERTY( EditDefaultsOnly ) TSubclassOf<AcAttachPoint> m_attach_BP;
 
 private:
 
@@ -50,6 +50,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 public:
-	UFUNCTION( BlueprintCallable, Category = "PlayerNodes" )
-	void shootRope(FVector _mousePos, bool _optimalDirection );
+	UFUNCTION( BlueprintCallable, Category = "PlayerNodes" ) void shootRope(FVector _mousePos, bool _optimalDirection );
+	UFUNCTION( BlueprintCallable, Category = "PlayerNodes" ) FVector playerMovement( float _input, float _deltaTime );
 };

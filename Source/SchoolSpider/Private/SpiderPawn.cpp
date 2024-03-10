@@ -33,6 +33,9 @@ void ASpiderPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ASpiderPawn::shootRope( FVector _mousePos, bool _optimalDirection )
 {
+	if( !m_attachPoint )
+		delete m_attachPoint;
+
 	FVector velocity = AActor::GetVelocity();
 	FVector dir;
 	FVector playerPos = AActor::GetActorLocation();
@@ -46,28 +49,72 @@ void ASpiderPawn::shootRope( FVector _mousePos, bool _optimalDirection )
 	}
 	else
 	{
-		dir = _mousePos - playerPos;
+		FVector location;
+		FVector direction;
+		m_playerController->DeprojectMousePositionToWorld( location, direction );
+		location = m_playerController->PlayerCameraManager.Get()->GetCameraLocation();
+
+		float magnitude = abs( location.X / direction.X );
+
+		dir = (location + direction * magnitude ) - playerPos;
+		//dir.X = 0;
 		dir.Normalize();
 	}
 
 	FHitResult hit;
 	FCollisionQueryParams paramaters;
-	//paramaters.AddIgnoredActor( AActor::GetUniqueID() );
-	paramaters.bTraceComplex = true;
+	paramaters.AddIgnoredActor( this );
+	FCollisionResponseParams collisionResponse;
 
 	//ActorLineTraceSingle( hit, playerPos + dir * 300, playerPos + dir * m_maxRopeLenght, ECollisionChannel::ECC_Visibility, paramaters );
-	DrawDebugLine( GetWorld(), playerPos + dir, playerPos + dir * m_maxRopeLenght, FColor::Emerald, false, 100, 10 );
+	DrawDebugLine( GetWorld(), playerPos + dir, playerPos + dir * m_maxRopeLenght, FColor::Red, false, 100, 100 );
 
-	if( !ActorLineTraceSingle(hit, playerPos + dir, playerPos + dir * m_maxRopeLenght, ECollisionChannel::ECC_Visibility, paramaters) )
+	//if( !ActorLineTraceSingle(hit, playerPos + FuckUE + dir, playerPos + dir * m_maxRopeLenght, ECollisionChannel::ECC_Visibility, paramaters, collisionResponse ) )
+	if( !GetWorld()->LineTraceSingleByChannel( hit, playerPos + dir, playerPos + dir * m_maxRopeLenght, ECollisionChannel::ECC_Visibility, paramaters, FCollisionResponseParams() ) )
 	{
 		if( GEngine )
-			GEngine->AddOnScreenDebugMessage( -1, 105.0f, FColor::Yellow, "Miss");
+			GEngine->AddOnScreenDebugMessage( -1, 105.0f, FColor::Red, "Miss");
+	}
+	else
+	{
+			GEngine->AddOnScreenDebugMessage( -1, 105.0f, FColor::Emerald, TEXT("Hit : ") + hit.GetActor()->GetName());
+		DrawDebugLine( GetWorld(), playerPos + dir, hit.Location, FColor::Emerald, false, 100, 200 );
+		
+		FActorSpawnParameters spawnParamaters;
+		m_attachPoint = GetWorld()->SpawnActor<AcAttachPoint>( m_attach_BP, hit.Location, FRotator::ZeroRotator, spawnParamaters );
+		auto constraint = m_attachPoint->m_physicsConstraint;
+		constraint->SetConstrainedComponents( NULL, "", m_capsule, "");
+		constraint->SetConstraintReferencePosition( EConstraintFrame::Frame1, FVector::Zero() );
+		constraint->SetLinearXLimit( ELinearConstraintMotion::LCM_Free, hit.Distance );
 	}
 
-	FActorSpawnParameters spawnParamaters;
-	m_attachPoint = GetWorld()->SpawnActor<AcAttachPoint>( m_attach_BP, hit.Location, FRotator::ZeroRotator, spawnParamaters );
-	auto constraint = m_attachPoint->m_physicsConstraint;
-	constraint->SetConstrainedComponents( NULL, "", m_capsule, "");
-	constraint->SetConstraintReferencePosition( EConstraintFrame::Frame1, FVector::Zero() );
-	constraint->SetLinearXLimit( ELinearConstraintMotion::LCM_Free, hit.Distance );
+}
+
+FVector ASpiderPawn::playerMovement( float _input, float _deltaTime )
+{
+	FVector change;
+	FVector velocity = GetVelocity();
+
+	if( m_swinging )
+	{
+		FVector dir = GetActorLocation() - m_attachPoint->GetActorLocation();
+		FVector output{ dir.X,-dir.Z, dir.Y };
+		output.Normalize();
+		if( dir.Z > 0 && abs( dir.Y ) > abs( dir.Y + _input ) )
+		{
+			change = dir * m_acceleration * _input;
+			if( GEngine )
+				GEngine->AddOnScreenDebugMessage( -1, 105.0f, FColor::Red, "Swing" );
+		}
+	}
+	else //if( m_grounded )
+	{
+		//if( velocity.Length() > m_maxSpeed && abs( m_maxSpeed ) < abs( m_maxSpeed + _input ) )
+		//	return;
+		if( GEngine )
+			GEngine->AddOnScreenDebugMessage( -1, 105.0f, FColor::Red, "Walk");
+		change = { 0, _input * m_acceleration, 0 };
+	}
+	m_primative->AddForce( change  );
+	return change;
 }
